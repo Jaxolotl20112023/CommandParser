@@ -22,7 +22,7 @@ int get_char_index(lines_t lines, char item) {
 
 	for (int i=0; i<strlen(lines.line_data); i++) {
 
-		if (lines.line_data[i] == item || lines.line_data[i] == '\n') {
+		if (lines.line_data[i] == item) {
 			return i; 
 		}
 	}
@@ -35,6 +35,7 @@ void print(int n, lines_t* lines, ...) {
 
 //	char* output = lines[n].line_data; 
 	int val = 0; 
+	
 
 	if (get_char_index(lines[n], '<') != -1) {
 	      // printf("Print line!\n"); 
@@ -48,11 +49,8 @@ void print(int n, lines_t* lines, ...) {
 	     //  printf("Index value: %d\n", atoi(index));
 	      	
 	       val = atoi(index); 
-
-
-	}
-	
-	switch (lines[val].output.kind) {
+       
+	       switch (lines[val].output.kind) {
 		case INTEGER:
 	       		printf("%d\n",lines[val].output.var.intvar); 
 			break; 
@@ -65,6 +63,11 @@ void print(int n, lines_t* lines, ...) {
 		case STRING:
 			printf("%s\n",lines[val].output.var.strvar); 
 			break; 
+		}
+
+	} else {
+		printf("%s",lines[n].line_data); 
+
 
 	}
 
