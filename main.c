@@ -3,6 +3,7 @@
 #include <string.h>
 #include "hashMap.h"
 
+
 char* get_line_info(char* ptr, int offset, int override) {
 
 	int len = strlen(ptr);
@@ -12,6 +13,8 @@ char* get_line_info(char* ptr, int offset, int override) {
 
 
 	for (int i=offset; i<len; i++) {
+
+	//	printf("%c",ptr[i]);
 	
 		if (ptr[i] == ' ' && override == 0) { 
 		       break;
@@ -27,26 +30,40 @@ char* get_line_info(char* ptr, int offset, int override) {
 	return new_ptr;
 }
 
-void compile_data(lines_t* lines, int num_lines) {
+void compile_data(lines_t* lines, int max) {
 	
-//	printf("command len: %d", COMMAND_LEN);
-	for (int j=0; j<num_lines; j++) {
-	//	printf("num lines: %d\n", num_lines);
+	compiler_t* compile_manage = malloc(sizeof(compiler_t)); 
+	compile_manage->curr_line = 0; 
+	compile_manage->curr_cmd = 0;
+       	compile_manage->total_lines = max;
+	
+	while (compile_manage->curr_line < compile_manage->total_lines) {
 
+		while (compile_manage->curr_cmd < 10) {
 
-		for (int i=0; i<COMMAND_LEN; i++) {
-		//	printf("key: %s v. command: %s\n", commands[i].key,lines[j].line_command);
-			if (strcmp(commands[i].key,lines[j].line_command) == 0)  {
-		//		printf("match\n");
-				commands[i].item(j, lines);
+	//		printf("cmd: %s vs input: %s\n", commands[compile_manage->curr_cmd].key, lines[compile_manage->curr_line].line_command);
+
+			if (strcmp(commands[compile_manage->curr_cmd].key,lines[compile_manage->curr_line].line_command) == 0)  {
+	//			printf("match\n");
+				commands[compile_manage->curr_cmd].item(compile_manage->curr_line, lines, compile_manage);
 				break;
 			}
+			compile_manage->curr_cmd++; 
 		}
-
+		compile_manage->curr_line++; 
+		compile_manage->curr_cmd = 0; 
 	}
+
+
 }
 
-int main() {
+int main(int argc, char *argv[]) {
+
+	FILE* fptr; 
+
+	fptr = fopen(argv[1],"r"); 
+
+	if (fptr == NULL) printf("FILE NOT OPENED");  
 
 	lines_t* lines = calloc(50,sizeof(lines_t)); 
 	int i=0; 
@@ -57,26 +74,32 @@ int main() {
 		char buffer[50];
 		char* ptr; 
 
-		fgets(buffer, 50, stdin); 
+		fgets(buffer, 50, fptr); 
 
 		ptr = buffer; 
+
+	//	printf("Line: %s\n", ptr); 
 
 		lines[i].line_num = i; 
 
 		lines[i].line_command = get_line_info(ptr,0,0); 
-		int commandLen = strlen(lines[i].line_command)+1; 
+		int commandLen = strlen(lines[i].line_command)+1;
+	        
+	//	printf("Line command: %sf v. ptr: %sf\n", lines[i].line_command, ptr); 	
 
-		if (strcmp(lines[i].line_command,"end\n") == 0){
+
+		if (strcmp(lines[i].line_command,"end") == 0){
 			break;
 		}
 
 		lines[i].line_data = get_line_info(ptr,commandLen,1);
 
 		i++; 
+
 	}
 
-
 	compile_data(lines,i);
+
 	
 
 	return 0;
