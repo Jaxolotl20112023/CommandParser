@@ -3,6 +3,7 @@
 #include <string.h>
 #include "hashMap.h"
 
+compiler_t* compile_manage; 
 
 char* get_line_info(char* ptr, int offset, int override) {
 
@@ -29,19 +30,23 @@ char* get_line_info(char* ptr, int offset, int override) {
 
 	return new_ptr;
 }
+				
+
+
 
 void compile_data(lines_t* lines, int max) {
 	
-	compiler_t* compile_manage = malloc(sizeof(compiler_t)); 
-	compile_manage->curr_line = 0; 
-	compile_manage->curr_cmd = 0;
-       	compile_manage->total_lines = max;
+//	compiler_t* compile_manage = malloc(sizeof(compiler_t)); 
+//	compile_manage->curr_line = 0; 
+//	compile_manage->curr_cmd = 0;
+//     	compile_manage->total_lines = max;
 	
 	while (compile_manage->curr_line < compile_manage->total_lines) {
 
-		while (compile_manage->curr_cmd < 10) {
+		while (compile_manage->curr_cmd < 11) {
 
 	//		printf("cmd: %s vs input: %s\n", commands[compile_manage->curr_cmd].key, lines[compile_manage->curr_line].line_command);
+	//		put check_var function in here to check for every variable
 
 			if (strcmp(commands[compile_manage->curr_cmd].key,lines[compile_manage->curr_line].line_command) == 0)  {
 	//			printf("match\n");
@@ -63,9 +68,17 @@ int main(int argc, char *argv[]) {
 
 	fptr = fopen(argv[1],"r"); 
 
-	if (fptr == NULL) printf("FILE NOT OPENED");  
+	if (fptr == NULL) {
+		printf("FILE NOT OPENED"); 
+	        return 1;
+	}	
 
 	lines_t* lines = calloc(50,sizeof(lines_t)); 
+
+	compile_manage = malloc(sizeof(compiler_t));
+	compile_manage->curr_line = 0; 
+	compile_manage->curr_cmd = 0;
+
 	int i=0; 
 
 	//commands[0].item(2,"hi!","you pickle!!\n");
@@ -97,6 +110,8 @@ int main(int argc, char *argv[]) {
 		i++; 
 
 	}
+
+	compile_manage->total_lines = i;
 
 	compile_data(lines,i);
 
