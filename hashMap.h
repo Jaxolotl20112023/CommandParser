@@ -4,6 +4,14 @@
 #include <stdlib.h>
 #include <string.h>
 
+typedef struct Compiler { 
+
+	int curr_line; 
+	int curr_cmd;
+        int total_lines; 	
+
+} compiler_t; 
+
 typedef union VarType {
 
 	int intvar;
@@ -20,7 +28,7 @@ typedef enum Types {
 	STRING
 } Types;
 
-typedef struct Type {
+typedef struct Output {
 
 	Types kind; 
 	var_type var; 
@@ -48,6 +56,11 @@ void add(int n,lines_t* lines, ...);
 void sub(int n,lines_t* lines, ...);
 void mul(int n,lines_t* lines, ...);
 void divide(int n,lines_t* lines, ...);
+void go_to(int n, lines_t* lines, ...);
+void less_than(int n, lines_t* lines, ...);
+void greater_than(int n, lines_t* lines, ...);
+void equal(int n, lines_t* lines, ...);
+void cmp(int n, lines_t* lines, ...);
 
 typedef struct HashMap {
 
