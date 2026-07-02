@@ -31,24 +31,34 @@ int get_char_index(char* str, char item) {
 
 }
 
-void print(int n, lines_t* lines, ...) {
+int check_var(char* str) { 
 
-//	char* output = lines[n].line_data; 
-	int val = 0; 
-	
+	int target = get_char_index(str,'@'); 
 
-	if (get_char_index(lines[n].line_data, '@') != -1) {
+	if (target != -1) {
 	      // printf("Print line!\n"); 
 	      // printf("Index of <: %d\n", get_char_index(lines[n],'<')); 
 
 	       char* index = calloc(20,sizeof(char)); 
-	       for (int i=0; i<get_char_index(lines[n].line_data, '@'); i++) {
-		       index[i] += lines[n].line_data[i]; 
+	       for (int i=0; i<target; i++) {
+		       index[i] += str[i]; 
 	       } 
 
 	     //  printf("Index value: %d\n", atoi(index));
 	      	
-	       val = atoi(index); 
+	       return atoi(index); 
+	} else {
+		return -1; 
+	}
+}
+
+
+void print(int n, lines_t* lines, ...) {
+
+//	char* output = lines[n].line_data; 
+	int val = check_var(lines[n].line_data); 
+
+	if (val != -1) {
        
 	       switch (lines[val].output.kind) {
 		case INTEGER:
@@ -306,8 +316,7 @@ void cmp(int n, lines_t* lines, ...) {
 	free(condition); 
 	free(output); 
 }
-	
-		
+
 
 
 hash_map_t commands[] = {
