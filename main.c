@@ -98,7 +98,9 @@ int main(int argc, char *argv[]) {
 		lines[i].line_command = get_line_info(ptr,0,0); 
 		int commandLen = strlen(lines[i].line_command)+1;
 	        
-	//	printf("Line command: %sf v. ptr: %sf\n", lines[i].line_command, ptr); 	
+	//	printf("Line command: %sf v. ptr: %sf\n", lines[i].line_command, ptr);
+
+		if (lines[i].line_command[0] == ' ' || lines[i].line_command[0] == '\n') continue;	
 
 
 		if (strcmp(lines[i].line_command,"end") == 0){
