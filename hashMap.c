@@ -1,26 +1,26 @@
 #include "hashMap.h"
 
-char* get_subdata(lines_t lines, int offset) {
+char* get_subdata(char* str, int offset) {
 	char* temp = calloc(20,sizeof(char));
 
 
-	for (int i=offset; i<strlen(lines.line_data); i++) {
+	for (int i=offset; i<strlen(str); i++) {
 
-		if (lines.line_data[i] == ',' || lines.line_data[i] == '\n') {
+		if (str[i] == ',' || str[i] == '\n') {
 			break; 
 		}
 
 //		printf("line_data char at %d: %c\n",i,lines[n].line_data[i]);
 		
-		temp[i-offset] = lines.line_data[i];
+		temp[i-offset] = str[i];
 	
 	}
 	return temp; 
 }
 
-int get_char_index(char* str, char item) {
+int get_char_index(char* str, char item, int offset) {
 
-	for (int i=0; i<strlen(str); i++) {
+	for (int i=offset; i<strlen(str); i++) {
 
 		if (str[i] == item) {
 			return i; 
@@ -33,14 +33,20 @@ int get_char_index(char* str, char item) {
 
 int check_var(char* str) { 
 
-	int target = get_char_index(str,'@'); 
+	int target = get_char_index(str,'@',0); 
+	int *vars_index = 0; 
+
+	char* s_num1 = calloc(5,sizeof(char)); 
+	char* s_num2 = calloc(5,sizeof(char));
 
 	if (target != -1) {
 	      // printf("Print line!\n"); 
 	      // printf("Index of <: %d\n", get_char_index(lines[n],'<')); 
 
-	       char* index = calloc(20,sizeof(char)); 
-	       for (int i=0; i<target; i++) {
+	       char* index = calloc(20,sizeof(char));
+
+	 
+	       for (int i=target+1; i<strlen(str); i++) {
 		       index[i] += str[i]; 
 	       } 
 
@@ -48,7 +54,7 @@ int check_var(char* str) {
 	      	
 	       return atoi(index); 
 	} else {
-		return -1; 
+	       return -1; 
 	}
 }
 
@@ -93,8 +99,8 @@ void add(int n, lines_t* lines, ...) {
 	float num1 = 0;
 	float num2 = 0; 
 
-	s_num1 = get_subdata(lines[n], 0); 
-	s_num2 = get_subdata(lines[n],strlen(s_num1)+1); 
+	s_num1 = get_subdata(lines[n].line_data, 0); 
+	s_num2 = get_subdata(lines[n].line_data,strlen(s_num1)+1); 
 
 	num1 = atoi(s_num1); 
 	num2 = atoi(s_num2); 
@@ -118,8 +124,9 @@ void sub(int n, lines_t* lines, ...) {
 	float num1 = 0;
 	float num2 = 0; 
 
-	s_num1 = get_subdata(lines[n], 0); 
-	s_num2 = get_subdata(lines[n],strlen(s_num1)+1); 
+	s_num1 = get_subdata(lines[n].line_data, 0); 
+	s_num2 = get_subdata(lines[n].line_data,strlen(s_num1)+1); 
+
 
 
 	num1 = atoi(s_num1); 
@@ -144,9 +151,9 @@ void mul(int n, lines_t* lines, ...) {
 	float num1 = 0;
 	float num2 = 0; 
 
-	s_num1 = get_subdata(lines[n], 0); 
-	s_num2 = get_subdata(lines[n],strlen(s_num1)+1);
-
+	s_num1 = get_subdata(lines[n].line_data, 0); 
+	s_num2 = get_subdata(lines[n].line_data,strlen(s_num1)+1); 	
+	
 	num1 = atoi(s_num1); 
 	num2 = atoi(s_num2); 
 
@@ -169,8 +176,8 @@ void divide(int n, lines_t* lines, ...) {
 	float num1 = 0;
 	float num2 = 0; 
 
-	s_num1 = get_subdata(lines[n], 0); 
-	s_num2 = get_subdata(lines[n],strlen(s_num1)+1);
+	s_num1 = get_subdata(lines[n].line_data, 0); 
+	s_num2 = get_subdata(lines[n].line_data,strlen(s_num1)+1);
 
 	num1 = atoi(s_num1); 
 	num2 = atoi(s_num2); 
@@ -214,8 +221,8 @@ void less_than(int n, lines_t* lines, ...) {
 	char* s_num2 = calloc(5,sizeof(char));
 
 
-	s_num1 = get_subdata(lines[n],0); 
-	s_num2 = get_subdata(lines[n],strlen(s_num1)+1);
+	s_num1 = get_subdata(lines[n].line_data,0); 
+	s_num2 = get_subdata(lines[n].line_data,strlen(s_num1)+1);
 
 	int num1 = atoi(s_num1); 
 	int num2 = atoi(s_num2);
@@ -239,8 +246,8 @@ void greater_than(int n, lines_t* lines, ...) {
 	char* s_num1 = calloc(5,sizeof(char)); 
 	char* s_num2 = calloc(5,sizeof(char)); 
 
-	s_num1 = get_subdata(lines[n],0); 
-	s_num2 = get_subdata(lines[n],strlen(s_num1)+1);
+	s_num1 = get_subdata(lines[n].line_data,0); 
+	s_num2 = get_subdata(lines[n].line_data,strlen(s_num1)+1);
 
 	int num1 = atoi(s_num1); 
 	int num2 = atoi(s_num2);
@@ -264,8 +271,8 @@ void equal(int n, lines_t* lines, ...) {
 	char* s_num1 = calloc(5,sizeof(char)); 
 	char* s_num2 = calloc(5,sizeof(char)); 
 
-	s_num1 = get_subdata(lines[n],0); 
-	s_num2 = get_subdata(lines[n],strlen(s_num1)+1);
+	s_num1 = get_subdata(lines[n].line_data,0); 
+	s_num2 = get_subdata(lines[n].line_data,strlen(s_num1)+1);
 
 	int num1 = atoi(s_num1); 
 	int num2 = atoi(s_num2);
@@ -297,9 +304,9 @@ void cmp(int n, lines_t* lines, ...) {
 	char* output = calloc(5,sizeof(char));
         char* elseo = calloc(5,sizeof(char)); 	
 
-	condition = get_subdata(lines[n],0); 
-	output = get_subdata(lines[n],strlen(condition)+1);
-	elseo = get_subdata(lines[n], strlen(condition)+strlen(output)+2); 
+	condition = get_subdata(lines[n].line_data,0); 
+	output = get_subdata(lines[n].line_data,strlen(condition)+1);
+	elseo = get_subdata(lines[n].line_data, strlen(condition)+strlen(output)+2); 
 
 //	printf("condition: %s\n", condition); 
 //	printf("output: %s\n", output);
