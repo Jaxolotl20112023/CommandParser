@@ -18,12 +18,33 @@ char* get_subdata(char* str, int offset) {
 	return temp; 
 }
 
-int get_char_index(char* str, char item, int offset) {
+int get_char_total(char* str, char item) {
 
-	for (int i=offset; i<strlen(str); i++) {
+	int appearance = 0;
+
+	for (int i=0; i<strlen(str); i++) {
 
 		if (str[i] == item) {
-			return i; 
+			appearance++; 
+		}
+	}
+
+	return appearance; 
+}
+
+
+int get_char_index(char* str, char item, int offset) {
+
+	int appearance = 0; 
+
+	for (int i=0; i<strlen(str); i++) {
+
+		if (str[i] == item) {
+		//	printf("%c is at %d!\n",item,i);
+			appearance++; 
+		}
+		if (appearance == offset) {
+			return i;
 		}
 	}
 	
@@ -31,64 +52,186 @@ int get_char_index(char* str, char item, int offset) {
 
 }
 
-int check_var(char* str) { 
+char* put_substring(char* str, char* n, int index) {
+	
+	int strLen = strlen(str); 
+	int nlen = strlen(n); 
+	char* new_str = calloc(strLen+nlen,sizeof(char));
 
-	int target = get_char_index(str,'@',0); 
-	int *vars_index = 0; 
+//	printf("new string length: %d", strlen(new_str));
 
-	char* s_num1 = calloc(5,sizeof(char)); 
-	char* s_num2 = calloc(5,sizeof(char));
+	int j=0;
+	int k=0; 	
 
-	if (target != -1) {
-	      // printf("Print line!\n"); 
-	      // printf("Index of <: %d\n", get_char_index(lines[n],'<')); 
+	for (int i=0; i<strLen+nlen; i++) {
+		
+		if (i >= index && i < index+nlen) {
+			new_str[i] = n[k]; 
+//			printf("new chars to str: %c\n",new_str[i]); 
+			k++; 
+			continue; 
+		}
 
-	       char* index = calloc(20,sizeof(char));
+		new_str[i] = str[j];
 
-	 
-	       for (int i=target+1; i<strlen(str); i++) {
-		       index[i] += str[i]; 
-	       } 
+//		printf("new chars to str: %c\n",new_str[i]); 
+	        j++;	
+	}	
 
-	     //  printf("Index value: %d\n", atoi(index));
-	      	
-	       return atoi(index); 
-	} else {
-	       return -1; 
+	return new_str; 
+}	
+
+char* new_replace(char* str, char* old, char* new) {
+
+	int strLen = strlen(str); 
+	int oldlen = strlen(old); 
+	int newlen = strlen(new); 
+	int index_str_len = (strLen-oldlen)+newlen; 
+	
+//	printf("index str len: %d\n",index_str_len);
+//	printf("new str len: %d\n",newlen);
+//	printf("old str len: %d\n",oldlen);
+	
+	int i=0;
+	int j=0;
+	int k=0; 
+	int len_dif = abs(newlen - oldlen); 
+
+	int search = 1; 
+
+	char* index = calloc(index_str_len,sizeof(char)); 
+
+	while (1) {
+
+		//printf("old %c at %d\n",old[k],k);
+
+		if (str[j] == old[k] && search) {
+			k++; 
+//			printf("MATCH\n");
+		} else { 
+			k=0; 
+		}
+
+		if (k == oldlen) {
+//		        printf("match at %c\n",str[j]);
+			
+//			printf("at i:%d\n",i);
+
+//			printf("i-(oldlen+1): %d\n",(i-oldlen)+1); 
+//			printf("i-newlen: %d\n", i-newlen);
+			
+			int max = newlen >= oldlen ? i+len_dif : i-len_dif; 
+//			printf("max: %d\n",max);
+//			printf("min: %d\n",(i-oldlen)+1);	
+			for(int l=(i-oldlen)+1; l<=max; l++) {
+//				printf("k index: %d k value: %c\n",l-(i-oldlen+1),new[l-(i-oldlen+1)]);
+				index[l] = new[l-(i-oldlen+1)]; 
+				k++;
+//			        printf("i: %d, %c\n",l,index[l]);	
+			}
+			i = max+1;
+			search = 0;
+//			printf("before j: %d\n",j);
+//		        printf("j %d\n",j);	
+			j++;
+		}
+
+
+		index[i] = str[j];
+
+		if (index[i] == '\0') break; 
+
+//		printf("i: %d, %c\n",i,index[i]);
+		j++; 
+		i++;
 	}
+
+//	printf("new index: %s\n",index);
+
+	return index; 
+}
+
+
+int check_var(int n, lines_t* lines) {
+
+//	printf("in check var!");
+	
+	char* index = NULL;	
+	char* str = lines[n].line_data; 
+	int total_vars = get_char_total(str,'@');
+	int num = 1;
+//        printf("\ntotal vars: %d\n", total_vars);	
+
+	while (num <= total_vars) {
+
+	//	printf("num %d out of %d\n", num,total_vars);
+
+		int target = get_char_index(lines[n].line_data,'@',1);
+
+	//	printf("\nline: %d and TARGET index: %d\n", n,target);
+     	  // 	printf("length of line_data: %d\n",strlen(lines[n].line_data));	
+
+		int i = target+1; 
+
+		if (target != -1) {
+
+		       char* index = (char*)calloc(5,sizeof(char));
+	//	       printf("start searching!!\n");
+
+	//	       printf("starting value at %d = %c\n",i,lines[n].line_data[i]);
+
+		       while (1) {
+
+			       if (lines[n].line_data[i] == ' ' || lines[n].line_data[i] == ',' || lines[n].line_data[i] == '\0') {
+					break; 
+		               }
+
+			       index[i-(target+1)] = lines[n].line_data[i];
+	//		       printf("Index char: %c\n",index[i-(target+1)]);  
+			       i++;
+	       	       }
+	  
+	//	       printf("lines data: %s\n",lines[n].line_data);
+	//	       printf("index val: %s\n",index);
+	//	       printf("why\n");	      
+	//	       printf("index strlen: %d\n", strlen(index)); 
+
+		       int f_new = lines[atoi(index)].output.var.floatvar;
+		       char new[20]; 
+		       snprintf(new, sizeof(new), "%d", f_new);
+
+	//	       printf("value of line %d: %s\n",atoi(index),new);
+
+		       index = put_substring(index,"@",0);
+	//	       printf("index with @ symbol: %s\n",index); 
+
+//		       printf("New: %s", new);  
+			
+
+		       lines[n].line_data = new_replace(lines[n].line_data,index,new);
+	//	       printf("offset: %d\n",1);
+	//	       printf("at target index: %c\n", lines[n].line_data[target]);
+	///	       printf("target: %d\n",target);
+
+		       //lines[n].line_data[target] = ' ';
+		      // memmove(&lines[n].line_data[target], &lines[n].line_data[target+1], strlen(lines[n].line_data) - target);  
+	//	       printf("new lines_data: %s\n", lines[n].line_data);
+
+		       num++;
+
+		} else {
+		       num++; 
+		}
+	}
+
+	if (index != NULL) free(index); 
+
 }
 
 
 void print(int n, lines_t* lines, ...) {
-
-//	char* output = lines[n].line_data; 
-	int val = check_var(lines[n].line_data); 
-
-	if (val != -1) {
-       
-	       switch (lines[val].output.kind) {
-		case INTEGER:
-	       		printf("%d\n",lines[val].output.var.intvar); 
-			break; 
-		case FLOAT: 
-			printf("%f\n",lines[val].output.var.floatvar); 
-			break;
-		case CHAR:
-			printf("%c\n",lines[val].output.var.charvar);
-		        break;	
-		case STRING:
-			printf("%s\n",lines[val].output.var.strvar); 
-			break; 
-		}
-
-	} else {
-		printf("%s",lines[n].line_data); 
-
-
-	}
-
-
-
+	
+	printf("%s",lines[n].line_data); 
 
 }
 
@@ -97,7 +240,7 @@ void add(int n, lines_t* lines, ...) {
 	char* s_num1 = calloc(20,sizeof(char));
 	char* s_num2 = calloc(20,sizeof(char)); 
 	float num1 = 0;
-	float num2 = 0; 
+	float num2 = 0;
 
 	s_num1 = get_subdata(lines[n].line_data, 0); 
 	s_num2 = get_subdata(lines[n].line_data,strlen(s_num1)+1); 
@@ -105,12 +248,8 @@ void add(int n, lines_t* lines, ...) {
 	num1 = atoi(s_num1); 
 	num2 = atoi(s_num2); 
 
-//	printf("num1: %d, num2: %d\n", num1,num2);
-
 	lines[n].output.kind = FLOAT;
 	lines[n].output.var.floatvar = num1+num2; 
-
-//	printf("sum: %d\n",lines[n].output.var.intvar); 
 
 	free(s_num1); 
 	free(s_num2);
@@ -127,17 +266,11 @@ void sub(int n, lines_t* lines, ...) {
 	s_num1 = get_subdata(lines[n].line_data, 0); 
 	s_num2 = get_subdata(lines[n].line_data,strlen(s_num1)+1); 
 
-
-
 	num1 = atoi(s_num1); 
 	num2 = atoi(s_num2); 
 
-//	printf("num1: %d, num2: %d\n", num1,num2);
-
 	lines[n].output.kind = FLOAT;
 	lines[n].output.var.floatvar = num1-num2; 
-
-//	printf("diff: %d\n",lines[n].output.var.intvar); 
 
 	free(s_num1); 
 	free(s_num2);
@@ -157,12 +290,8 @@ void mul(int n, lines_t* lines, ...) {
 	num1 = atoi(s_num1); 
 	num2 = atoi(s_num2); 
 
-//	printf("num1: %d, num2: %d\n", num1,num2);
-
 	lines[n].output.kind = FLOAT;
 	lines[n].output.var.floatvar = num1*num2; 
-
-//	printf("diff: %d\n",lines[n].output.var.intvar); 
 
 	free(s_num1); 
 	free(s_num2);
@@ -182,12 +311,8 @@ void divide(int n, lines_t* lines, ...) {
 	num1 = atoi(s_num1); 
 	num2 = atoi(s_num2); 
 
-//	printf("num1: %d, num2: %d\n", num1,num2);
-
 	lines[n].output.kind = FLOAT;
 	lines[n].output.var.floatvar = num1/num2; 
-
-//	printf("diff: %d\n",lines[n].output.var.intvar); 
 
 	free(s_num1); 
 	free(s_num2);
@@ -209,7 +334,8 @@ void go_to(int n, lines_t* lines, ...) {
 
 	compiler->curr_line = target; 
 	compiler->curr_cmd = 0;
-//   	printf("compiler curr_ljne: %d\n", compiler->curr_line);	
+
+
 
 	va_end(args); 
 }
@@ -307,9 +433,6 @@ void cmp(int n, lines_t* lines, ...) {
 	condition = get_subdata(lines[n].line_data,0); 
 	output = get_subdata(lines[n].line_data,strlen(condition)+1);
 	elseo = get_subdata(lines[n].line_data, strlen(condition)+strlen(output)+2); 
-
-//	printf("condition: %s\n", condition); 
-//	printf("output: %s\n", output);
 
 	if (lines[atoi(condition)].output.var.intvar) {
 	//	printf("TRUE\n");
