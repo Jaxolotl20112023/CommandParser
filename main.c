@@ -42,9 +42,11 @@ void compile_data(lines_t* lines, int max) {
 //     	compile_manage->total_lines = max;
 	
 	while (compile_manage->curr_line < compile_manage->total_lines) {
+		check_var(compile_manage->curr_line,lines); 
 
 		while (compile_manage->curr_cmd < 11) {
-
+			
+			//check_var(compile_manage->curr_line,lines); 
 	//		printf("cmd: %s vs input: %s\n", commands[compile_manage->curr_cmd].key, lines[compile_manage->curr_line].line_command);
 	//		put check_var function in here to check for every variable
 
@@ -81,8 +83,6 @@ int main(int argc, char *argv[]) {
 
 	int i=0; 
 
-	//commands[0].item(2,"hi!","you pickle!!\n");
-
 	while (1) {
 		char buffer[50];
 		char* ptr; 
@@ -91,14 +91,14 @@ int main(int argc, char *argv[]) {
 
 		ptr = buffer; 
 
-	//	printf("Line: %s\n", ptr); 
+//		printf("Line: %s\n", ptr); 
 
 		lines[i].line_num = i; 
 
 		lines[i].line_command = get_line_info(ptr,0,0); 
 		int commandLen = strlen(lines[i].line_command)+1;
 	        
-	//	printf("Line command: %sf v. ptr: %sf\n", lines[i].line_command, ptr);
+//		printf("Line command: %sf v. ptr: %sf\n", lines[i].line_command, ptr);
 
 		if (lines[i].line_command[0] == ' ' || lines[i].line_command[0] == '\n') continue;	
 
