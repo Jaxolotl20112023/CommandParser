@@ -51,6 +51,10 @@ typedef struct Command {
 
 } command_t; 
 
+int check_var(int n, lines_t* lines);
+char* replace(char* str, char* old, char* new, int offset);
+char* new_replace(char* str, char* old, char* new); 
+char* put_substring(char* sstr, char* n, int index); 
 void print(int n,lines_t* lines, ...);
 void add(int n,lines_t* lines, ...);
 void sub(int n,lines_t* lines, ...);
@@ -61,6 +65,7 @@ void less_than(int n, lines_t* lines, ...);
 void greater_than(int n, lines_t* lines, ...);
 void equal(int n, lines_t* lines, ...);
 void cmp(int n, lines_t* lines, ...);
+
 
 typedef struct HashMap {
 
